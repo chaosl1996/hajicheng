@@ -22,6 +22,8 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     # 创建设备信息（与switch共用）
     device_info = DeviceInfo(
         identifiers={(DOMAIN, f"tcp_switch_{host}_{port}")},
+        manufacturer="Custom TCP",
+        name=f"TCP Switch {host}:{port}"
     )
     
     # 创建电压/电流传感器

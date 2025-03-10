@@ -1,11 +1,11 @@
 {
-  "domain": "my_tcp_switch",
-  "name": "TCP Switch",
-  "version": "1.0.0",
-  "documentation": "https://example.com/docs/my_tcp_switch",
-  "codeowners": ["@chaos"],
-  "requirements": [],
-  "dependencies": [],
-  "iot_class": "local_polling",
-  "config_flow": true
+    "version": "1.0.0",
+    "domain": "my_tcp_switch",
+    "name": "TCP Switch and Sensor",
+    "config_flow": true,
+    "documentation": "https://example.com",
+    "dependencies": [],
+    "codeowners": ["@yourgithub"],
+    "requirements": [],
+    "iot_class": "local_polling"
 }

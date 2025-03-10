@@ -18,6 +18,8 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     client = TCPClient(host, port)
     if not await client.connect():
         return False
+    hass.data.setdefault(DOMAIN, {})
+    hass.data[DOMAIN][config_entry.entry_id] = client
     
     # 创建设备
     device_info = DeviceInfo(
@@ -29,7 +31,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     # 创建8个通道开关
     entities = [
         TCPSwitch(client, f"channel_{i+1}", device_info)
-        for i in range(8)
+        for i in range(config_entry.data["channels"])
     ]
     async_add_entities(entities)
 

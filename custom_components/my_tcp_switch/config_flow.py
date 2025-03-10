@@ -31,7 +31,8 @@ class TCPSwitchConfigFlow(config_entries.ConfigFlow, domain="my_tcp_switch"):
             step_id="user",
             data_schema=vol.Schema({
                 vol.Required("host", default="192.168.1.100"): str,
-                vol.Required("port", default=8080): int
+                vol.Required("port", default=8080): int,
+                vol.Required("channels", default=8): vol.All(int, vol.Range(min=1, max=16))
             }),
             errors=errors
         )
@@ -42,15 +43,34 @@ class TCPSwitchConfigFlow(config_entries.ConfigFlow, domain="my_tcp_switch"):
         """获取选项流"""
         return TCPSwitchOptionsFlow(config_entry)
 
+
 class TCPSwitchOptionsFlow(config_entries.OptionsFlow):
-    """处理选项配置（通道设置）"""
+    """处理选项配置流"""
 
     def __init__(self, config_entry):
+        """初始化选项流"""
         self.config_entry = config_entry
 
     async def async_step_init(self, user_input=None):
-        """管理选项"""
-        return self.async_show_menu(
+        """管理选项配置"""
+        errors = {}
+        if user_input is not None:
+            # 更新配置并触发重新加载
+            new_data = {**self.config_entry.data, **user_input}
+            self.hass.config_entries.async_update_entry(
+                self.config_entry,
+                data=new_data
+            )
+            await self.hass.config_entries.async_reload(self.config_entry.entry_id)
+            return self.async_create_entry(title="", data={})
+
+        return self.async_show_form(
             step_id="init",
-            menu_options=["add_channel", "remove_channel"]
+            data_schema=vol.Schema({
+                vol.Required(
+                    "channels",
+                    default=self.config_entry.data.get("channels", 8)
+                ): vol.All(int, vol.Range(min=1, max=16))
+            }),
+            errors=errors
         )
