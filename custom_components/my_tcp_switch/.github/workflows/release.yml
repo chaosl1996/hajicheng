@@ -1,0 +1,33 @@
+name: Release Integration
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Package integration
+        run: |
+          mkdir -p package/custom_components/my_tcp_switch
+          cp -r custom_components/my_tcp_switch/* package/custom_components/my_tcp_switch/
+          cp README.md LICENSE manifest.json package/
+          cd package && zip -r ../my_tcp_switch.zip .
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: my_tcp_switch.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
